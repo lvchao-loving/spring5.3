@@ -1,10 +1,11 @@
 package com.lvchao;
 
+import com.lvchao.entity.H;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * <p>
- * 文件描述（必填！！！）
+ * 启动类
  * </p>
  *
  * @author lvchao
@@ -14,8 +15,8 @@ public class Application {
 	public static void main(String[] args) {
 		System.out.println("测试");
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(Lvchao.class);
+		context.register(H.J.class);
 		context.refresh();
-		System.out.println(context.getBean(Lvchao.class));
+		context.getBean(H.J.class);
 	}
 }

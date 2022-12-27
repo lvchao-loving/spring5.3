@@ -1,4 +1,4 @@
-package com.lvchao;
+package com.lvchao.entity;
 
 /**
  * <p>
@@ -6,7 +6,7 @@ package com.lvchao;
  * </p>
  *
  * @author lvchao
- * @since 2022/11/19 18:42
+ * @since 2022/11/26 19:12
  */
-public class Lvchao {
+public class D {
 }
