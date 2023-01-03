@@ -26,7 +26,8 @@ public class TestReflect {
 
 	@Test
 	public void test02(){
-		C c = new C();
-
+		Object c = new C();
+		Object cClass = C.class;
+		System.out.println(cClass instanceof Class);
 	}
 }

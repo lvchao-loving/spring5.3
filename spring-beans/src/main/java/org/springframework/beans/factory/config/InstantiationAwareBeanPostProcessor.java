@@ -109,6 +109,13 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @since 5.1
 	 * @see #postProcessPropertyValues
+	 *
+	 * 执行时机：这个方法用来在对象实例化前直接返回一个对象（如代理对象）来代替通过内置的实例化流程创建对象。
+	 *
+	 *
+	 * 作用：
+	 * 1、AutowiredAnnotationBeanPostProcessor#postProcessProperties 方法完成 @Autowired注解 和 @Resource注解 属性注入
+	 * 2、
 	 */
 	@Nullable
 	default PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)

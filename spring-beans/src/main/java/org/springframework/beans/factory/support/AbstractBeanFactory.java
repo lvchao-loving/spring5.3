@@ -251,12 +251,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected <T> T doGetBean(
 			String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly)
 			throws BeansException {
-		// 1.校验名字的合法性。2.
+		/**
+		 * 1.校验名字的合法性。
+		 * 2.
+		 */
 		String beanName = transformedBeanName(name);
 		Object beanInstance;
 
-		// Eagerly check singleton cache for manually registered singletons.
 		/**
+		 * Eagerly check singleton cache for manually registered singletons.
+		 *
 		 * spring 创建 bean 的原则是不等 bean 创建完成就会将创建 bean 的 objectFactory 提早曝光，也就是将 ObjectFactory 对象加入到三级缓存中，一旦一个bean创建是需要
 		 * 依赖上个 bean 则直接使用 ObjectFactory 创建对象，并将 此时创建的 Bean 对象添加到二级缓存中。
 		 */
@@ -284,11 +288,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
-			// Check if bean definition exists in this factory.
 			/**
-			 * 校验是否存在父级的 BeanFactory
+			 * Check if bean definition exists in this factory.
 			 */
 			BeanFactory parentBeanFactory = getParentBeanFactory();
+
 			/**
 			 * 如果 存在 parentBeanFactory 父级的Bean工厂对象，并且 如果 beanDefinitionMap 中也就是在所有已经加载的类中不包括 beanName 则尝试从 parkingBeanFactory 中获取。
 			 */
@@ -1194,7 +1198,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (beanInstance != null) {
 			return (beanInstance instanceof FactoryBean);
 		}
-		// No singleton instance found -> check bean definition.
+		/**
+		 * No singleton instance found -> check bean definition.
+		 * 如果当前 beanName 没有被创建，并且从当前容器中找不到 beanName 对应的 BeanDefinition 对象已经 父容器不为空并且实现是
+		 * ConfigurableBeanFactory 子类，则使用父容器进行递归调用
+		 */
 		if (!containsBeanDefinition(beanName) && getParentBeanFactory() instanceof ConfigurableBeanFactory) {
 			// No bean definition found in this factory -> delegate to parent.
 			return ((ConfigurableBeanFactory) getParentBeanFactory()).isFactoryBean(name);

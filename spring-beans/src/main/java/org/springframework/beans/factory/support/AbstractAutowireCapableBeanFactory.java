@@ -539,7 +539,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			/**
 			 *  Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			 *  AOP 部分涉及代码
+			 *
+			 *  让 BeanPostProcessors 有机会返回代理而不是目标bean实例。(AOP 部分涉及代码)
 			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
@@ -606,7 +607,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
-					// 执行 MergedBeanDefinitionPostProcessor 类
+					// 执行 MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition 方法
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
 				catch (Throwable ex) {
@@ -626,11 +627,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			//
+			/**
+			 * 1、将实例化的对象添加到三级缓存
+			 * 2、从二级缓存中添加移除对应的 beanName 对象
+			 * 3、将 beanName 添加到 registeredSingletons 集合中
+			 * 4、创建了一个 singletonFactory，singletonFactory的方法循环遍历执行了 SmartInstantiationAwareBeanPostProcessor#getEarlyBeanReference 方法
+			 */
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
-		// Initialize the bean instance.
+		/**
+		 * Initialize the bean instance.
+		 * 初始化实例的对象
+		 */
 		Object exposedObject = bean;
 		try {
 			populateBean(beanName, mbd, instanceWrapper);

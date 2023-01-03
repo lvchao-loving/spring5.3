@@ -42,9 +42,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Descriptor for a specific dependency that is about to be injected.
- * Wraps a constructor parameter, a method parameter or a field,
- * allowing unified access to their metadata.
+ * Descriptor(描述符) for a specific dependency that is about to be injected.
+ * Wraps(warp 包) a constructor parameter, a method parameter or a field,
+ * allowing unified(unify：统一) access to their metadata.
  *
  * @author Juergen Hoeller
  * @since 2.5

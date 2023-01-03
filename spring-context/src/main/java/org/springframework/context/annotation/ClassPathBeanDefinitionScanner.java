@@ -392,7 +392,8 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		/**
-		 *
+		 * AnnotationConfigApplicationContext 容器是继承了 EnvironmentCapable 接口，
+		 * 即 【registry instanceof EnvironmentCapable】返回 true
 		 */
 		if (registry instanceof EnvironmentCapable) {
 			return ((EnvironmentCapable) registry).getEnvironment();

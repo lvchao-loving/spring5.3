@@ -5,7 +5,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * <p>
- * 文件描述（必填！！！）
+ * bean的生命周期测试类
  * </p>
  *
  * @author lvchao
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 // @EnableAspectAop
 @EnableAspectJAutoProxy
-@ComponentScan("com.lvchao.lifeCycle")
-public class LifeCycleConfig {
+@ComponentScan("com.lvchao.lifeCycle.test")
+// @ComponentScan("com.lvchao.lifeCycle")
+public class AppConfigLifeCycle {
 }

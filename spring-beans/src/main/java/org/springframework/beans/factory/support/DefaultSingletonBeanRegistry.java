@@ -85,10 +85,16 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
 
 	// 已经被 spring 初始化的 Bean 名称
-	/** Set of registered singletons, containing the bean names in registration order. */
+	/**
+	 * Set of registered singletons, containing the bean names in registration order.
+	 *
+	 */
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
-	/** Names of beans that are currently in creation. */
+	/**
+	 * Names of beans that are currently in creation.
+	 * 循环依赖的时候 会将正在创建的对象添加到 singletonsCurrentlyInCreation 集合中。
+	 */
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
@@ -178,11 +184,15 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param beanName the name of the bean to look for
 	 * @param allowEarlyReference whether early references should be created or not
 	 * @return the registered singleton object, or {@code null} if none found
+	 *
+	 * allowEarlyReference 属性也是决定了是否可以关闭spring的循环依赖
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
-		// Quick check for existing instance without full singleton lock
-		// 从单例池获取
+		/**
+		 * Quick check for existing instance without full singleton lock.
+		 * 快速检查没有完整单例锁的现有实例。
+		 */
 		Object singletonObject = this.singletonObjects.get(beanName);
 		// isSingletonCurrentlyInCreation 判断 beanName 是否正在创建
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {

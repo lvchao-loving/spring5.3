@@ -545,6 +545,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Return whether this definition specifies a bean class.
+	 *
+	 * 如果 beanClass 代表的是一个 class 则返回 true，否则返回 false.
+	 *
 	 * @see #getBeanClass()
 	 * @see #setBeanClass(Class)
 	 * @see #resolveBeanClass(ClassLoader)
@@ -1219,6 +1222,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 					"Cannot combine factory method with container-generated method overrides: " +
 					"the factory method must create the concrete bean instance.");
 		}
+		/**
+		 * hasBeanClass() -> 判断 当前 beanClass 是否是 Class 类
+		 */
 		if (hasBeanClass()) {
 			prepareMethodOverrides();
 		}
