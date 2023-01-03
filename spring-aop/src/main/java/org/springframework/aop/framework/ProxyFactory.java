@@ -92,6 +92,10 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 * <p>Uses a default class loader: Usually, the thread context class loader
 	 * (if necessary for proxy creation).
 	 * @return the proxy object
+	 *
+	 * 方法完成两部分：
+	 * 1、选择 JDK代理 或者 CGLIB代理
+	 * 2、创建代理类
 	 */
 	public Object getProxy() {
 		return createAopProxy().getProxy();

@@ -174,9 +174,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	public AbstractAutowireCapableBeanFactory() {
 		super();
+		/**
+		 * 向 AbstractAutowireCapableBeanFactory#ignoredDependencyInterfaces属性中一次添加：BeanNameAware.class、BeanFactoryAware.class 和 BeanClassLoaderAware.class
+		 */
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);
 		ignoreDependencyInterface(BeanClassLoaderAware.class);
+		/**
+		 * NativeDetector.inNativeImage() 默认为 false
+		 */
 		if (NativeDetector.inNativeImage()) {
 			this.instantiationStrategy = new SimpleInstantiationStrategy();
 		}
@@ -531,8 +537,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			// AOP 部分涉及代码
+			/**
+			 *  Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			 *  AOP 部分涉及代码
+			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;

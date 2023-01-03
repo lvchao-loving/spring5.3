@@ -386,11 +386,14 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 
 	/**
-	 * Get the Environment from the given registry if possible, otherwise return a new
-	 * StandardEnvironment.
+	 * Get the Environment from the given registry if possible, otherwise return a new StandardEnvironment.
+	 * 如果可能就从容器中获取 Environment，否则返回一个新创建的 StandardEnvironment。
 	 */
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+		/**
+		 *
+		 */
 		if (registry instanceof EnvironmentCapable) {
 			return ((EnvironmentCapable) registry).getEnvironment();
 		}

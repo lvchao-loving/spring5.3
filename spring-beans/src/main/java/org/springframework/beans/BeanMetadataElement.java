@@ -30,6 +30,7 @@ public interface BeanMetadataElement {
 	/**
 	 * Return the configuration source {@code Object} for this metadata element
 	 * (may be {@code null}).
+	 * 返回此元数据元素的配置源对象（可能为null）。
 	 */
 	@Nullable
 	default Object getSource() {

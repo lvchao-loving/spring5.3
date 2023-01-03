@@ -292,7 +292,15 @@ public class AnnotatedBeanDefinitionReader {
 	 */
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+		/**
+		 * AnnotationConfigApplicationContext类创建的容器是继承EnvironmentCapable，
+		 * 即 【registry instanceof EnvironmentCapable】 返回true
+		 */
 		if (registry instanceof EnvironmentCapable) {
+			/**
+			 * AbstractApplicationContext#getEnvironment方法获取 Environment 对象，如果不存在则创建一个 Environment 对象，
+			 * 其中 Environment 对象允许在早期的时候自定义对象。
+			 */
 			return ((EnvironmentCapable) registry).getEnvironment();
 		}
 		return new StandardEnvironment();

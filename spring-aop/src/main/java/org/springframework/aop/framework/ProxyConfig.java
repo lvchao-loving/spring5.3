@@ -34,6 +34,9 @@ public class ProxyConfig implements Serializable {
 	private static final long serialVersionUID = -8409359707199703185L;
 
 
+	/**
+	 * 是否代理目标类 默认 false；spring 中通过 copyFrom 方法设置该属性
+	 */
 	private boolean proxyTargetClass = false;
 
 	private boolean optimize = false;
@@ -63,6 +66,7 @@ public class ProxyConfig implements Serializable {
 
 	/**
 	 * Return whether to proxy the target class directly as well as any interfaces.
+	 * 返回是否直接代理目标类以及任何接口。
 	 */
 	public boolean isProxyTargetClass() {
 		return this.proxyTargetClass;

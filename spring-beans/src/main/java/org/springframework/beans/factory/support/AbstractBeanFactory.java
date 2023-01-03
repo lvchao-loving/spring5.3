@@ -1048,6 +1048,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 	}
 
+	/**
+	 * synchronized 锁后，删除 beanPostProcessorCache 属性
+	 */
 	private void resetBeanPostProcessorCache() {
 		synchronized (this.beanPostProcessors) {
 			this.beanPostProcessorCache = null;
@@ -2058,7 +2061,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	/**
 	 * CopyOnWriteArrayList which resets the beanPostProcessorCache field on modification.
-	 *
+	 * CopyOnWriteArrayList 在被修改时重置 beanPostProcessorCache 属性。
 	 * @since 5.3
 	 */
 	private class BeanPostProcessorCacheAwareList extends CopyOnWriteArrayList<BeanPostProcessor> {

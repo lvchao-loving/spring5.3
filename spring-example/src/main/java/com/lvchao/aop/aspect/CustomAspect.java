@@ -29,32 +29,32 @@ public class CustomAspect {
 	 * 5、target 指向接口和子类。
 	 */
 
-	// 匹配 com.lvchao.aop.target 包下任意接口和类的任意方法
-	// @Pointcut("execution(* com.lvchao.aop.target.*.*(..))")
+	// 匹配 com.lvchao.aop.service 包下任意接口和类的任意方法
+	@Pointcut("execution(* com.lvchao.aop.service.*.*(..))")
 	public void executionPointCut1(){}
 
-	// 匹配 com.lvchao.aop.target 包下任意的方法
-	// @Pointcut("execution(* com.lvchao.aop.target.*(..))")
+	// 匹配 com.lvchao.aop.service 包下任意的方法
+	// @Pointcut("execution(* com.lvchao.aop.service.*(..))")
 	public void executionPointCut2(){}
 
-	// 匹配 com.lvchao.aop.target 包及其子包中任意的方法
-	// @Pointcut("execution(* com.lvchao.aop.target..*.*(..))")
+	// 匹配 com.lvchao.aop.service 包及其子包中任意的方法
+	// @Pointcut("execution(* com.lvchao.aop.service..*.*(..))")
 	public void executionPointCut3(){}
 
-	// 匹配 com.lvchao.aop.target 包下任意接口和类的public修饰的方法
-	// @Pointcut("execution(public * com.lvchao.aop.target.*.*(..))")
+	// 匹配 com.lvchao.aop.service 包下任意接口和类的public修饰的方法
+	// @Pointcut("execution(public * com.lvchao.aop.service.*.*(..))")
 	public void executionPointCut4(){}
 
-	// 匹配 com.lvchao.aop.target 包下任意接口和类的无参方法
-	// @Pointcut("execution(* com.lvchao.aop.target.*.*())")
+	// 匹配 com.lvchao.aop.service 包下任意接口和类的无参方法
+	// @Pointcut("execution(* com.lvchao.aop.service.*.*())")
 	public void executionPointCut5(){}
 
-	// 匹配 com.lvchao.aop.target 包下任意接口和类的第一个参数为Integer类型的接口
-	// @Pointcut("execution(* com.lvchao.aop.target.*.*(java.lang.Integer,..))")
+	// 匹配 com.lvchao.aop.service 包下任意接口和类的第一个参数为Integer类型的接口
+	// @Pointcut("execution(* com.lvchao.aop.service.*.*(java.lang.Integer,..))")
 	public void executionPointCut6(){}
 
-	// 匹配 com.lvchao.aop.target 包下任意接口和类只有一个参数并且参数类型为Integer
-	// @Pointcut("execution(* com.lvchao.aop.target.*.*(java.lang.Integer))")
+	// 匹配 com.lvchao.aop.service 包下任意接口和类只有一个参数并且参数类型为Integer
+	// @Pointcut("execution(* com.lvchao.aop.service.*.*(java.lang.Integer))")
 	public void executionPointCut7(){}
 
 	// 匹配任意的public方法
@@ -66,10 +66,10 @@ public class CustomAspect {
 	public void executionPointCut9(){}
 
 	// 匹配任意的以methodIntegerArg开头的方法
-	@Pointcut("execution(* methodIntegerArg*(..))")
+	// @Pointcut("execution(* methodIntegerArg*(..))")
 	public void executionPointCut10(){}
 
-	@Before("executionPointCut10()")
+	@Before("executionPointCut1()")
 	public void adviceBefore(JoinPoint joinPoint){
 		log.debug("当前执行方法-->" + ((MethodInvocationProceedingJoinPoint) joinPoint).getSignature().getName() + " , before aop");
 	}

@@ -1,0 +1,23 @@
+package com.lvchao.reflect.bean;
+
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * <p>
+ * 文件描述（必填！！！）
+ * </p>
+ *
+ * @author lvchao
+ * @since 2023/1/2 14:11
+ */
+@Data
+@Slf4j
+public class C extends A{
+
+	public C(){
+		log.info("C的无参构造函数...");
+	}
+
+	private String address;
+}

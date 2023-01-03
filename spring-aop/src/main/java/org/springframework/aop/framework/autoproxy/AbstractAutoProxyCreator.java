@@ -135,6 +135,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	@Nullable
 	private BeanFactory beanFactory;
 
+	/**
+	 * 代理目前类名称集合
+	 */
 	private final Set<String> targetSourcedBeans = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	private final Map<Object, Object> earlyProxyReferences = new ConcurrentHashMap<>(16);
@@ -267,6 +270,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				this.targetSourcedBeans.add(beanName);
 			}
 			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource);
+			/**
+			 * 创建一个代理类
+			 */
 			Object proxy = createProxy(beanClass, beanName, specificInterceptors, targetSource);
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
@@ -310,6 +316,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	protected Object getCacheKey(Class<?> beanClass, @Nullable String beanName) {
 		if (StringUtils.hasLength(beanName)) {
+			/**
+			 * FactoryBean.class.isAssignableFrom(beanClass)：beanClass 是否是 beanClass类型或者是 beanClass 的子类
+			 */
 			return (FactoryBean.class.isAssignableFrom(beanClass) ?
 					BeanFactory.FACTORY_BEAN_PREFIX + beanName : beanName);
 		}
@@ -395,6 +404,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * Returns {@code null} if no custom TargetSource should be used.
 	 * <p>This implementation uses the "customTargetSourceCreators" property.
 	 * Subclasses can override this method to use a different mechanism.
+	 *
+	 * 为Bean 实例 创建一个TargetSource。使用任意 TargetSourceCreators 去设置。如果没有自定义的 TargetSource 被使用则返回null。
+	 * 此实现使用 "customTargetSourceCreators" 属性，子类能够覆盖这个方法实现不同的机制。
+	 *
 	 * @param beanClass the class of the bean to create a TargetSource for
 	 * @param beanName the name of the bean
 	 * @return a TargetSource for this bean
@@ -402,7 +415,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	@Nullable
 	protected TargetSource getCustomTargetSource(Class<?> beanClass, String beanName) {
-		// We can't create fancy target sources for directly registered singletons.
+		/**
+		 *  We can't create fancy target sources for directly registered singletons.
+		 *  不能为单例对象创建一个想要的 TargetSource
+		 */
 		if (this.customTargetSourceCreators != null &&
 				this.beanFactory != null && this.beanFactory.containsBean(beanName)) {
 			for (TargetSourceCreator tsc : this.customTargetSourceCreators) {
@@ -424,6 +440,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	/**
 	 * Create an AOP proxy for the given bean.
+	 *
+	 * 创建一个AOP代理类
+	 *
 	 * @param beanClass the class of the bean
 	 * @param beanName the name of the bean
 	 * @param specificInterceptors the set of interceptors that is
@@ -436,13 +455,32 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	protected Object createProxy(Class<?> beanClass, @Nullable String beanName,
 			@Nullable Object[] specificInterceptors, TargetSource targetSource) {
 
+		/**
+		 * spring 提供的容器为 true
+		 */
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
 
+		/**
+		 * 创建代理工程
+		 */
 		ProxyFactory proxyFactory = new ProxyFactory();
+
+		/**
+		 * 将 AbstractAutoProxyCreator 类中继承 ProxyConfig 属性的字段复制到 proxyFactory 属性中
+		 *
+		 * 		this.proxyTargetClass = other.proxyTargetClass;
+		 * 		this.optimize = other.optimize;
+		 * 		this.exposeProxy = other.exposeProxy;
+		 * 		this.frozen = other.frozen;
+		 * 		this.opaque = other.opaque;
+		 */
 		proxyFactory.copyFrom(this);
 
+		/**
+		 *
+		 */
 		if (proxyFactory.isProxyTargetClass()) {
 			// Explicit handling of JDK proxy targets and lambdas (for introduction advice scenarios)
 			if (Proxy.isProxyClass(beanClass) || ClassUtils.isLambdaClass(beanClass)) {

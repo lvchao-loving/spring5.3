@@ -295,7 +295,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 */
 	public void setAutowireCandidateResolver(AutowireCandidateResolver autowireCandidateResolver) {
 		Assert.notNull(autowireCandidateResolver, "AutowireCandidateResolver must not be null");
+		/**
+		 * 默认执行的是 ContextAnnotationAutowireCandidateResolver 类，并且 ContextAnnotationAutowireCandidateResolver 类实现了 BeanFactoryAware 接口。
+		 *
+		 * 判断 autowireCandidateResolver 类是否实现了 BeanFactoryAware 接口，
+		 * 如果是则调用 BeanFa#ctoryAware#setBeanFactory()方法，设置 BeanFactory 属性。
+		 */
 		if (autowireCandidateResolver instanceof BeanFactoryAware) {
+			/**
+			 * 默认情况下 【System.getSecurityManager() != null】返回 false
+			 */
 			if (System.getSecurityManager() != null) {
 				AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 					((BeanFactoryAware) autowireCandidateResolver).setBeanFactory(this);
@@ -1181,6 +1190,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Update the factory's internal set of manual singleton names.
+	 * 更新工厂的内部手动单例名称集。
 	 * @param action the modification action
 	 * @param condition a precondition for the modification action
 	 * (if this condition does not apply, the action can be skipped)
