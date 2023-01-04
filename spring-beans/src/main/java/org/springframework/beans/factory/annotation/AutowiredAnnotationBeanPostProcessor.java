@@ -134,6 +134,9 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * 通过构造函数初始化：@Autowired.class注解、@Value注解 和 @Inject注解（按需）
+	 */
 	private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(4);
 
 	private String requiredParameterName = "required";
@@ -149,6 +152,11 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 	private final Map<Class<?>, Constructor<?>[]> candidateConstructorsCache = new ConcurrentHashMap<>(256);
 
+	/**
+	 * 存储类中通过 autowiredAnnotationTypes 集合扫描出来的 属性 和 方法的集合
+	 * key：beanName 或 Class名称
+	 * value：依赖注入元信息
+	 */
 	private final Map<String, InjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(256);
 
 
@@ -160,9 +168,12 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 	 */
 	@SuppressWarnings("unchecked")
 	public AutowiredAnnotationBeanPostProcessor() {
+		// 初始化 @Autowired.class 注解
 		this.autowiredAnnotationTypes.add(Autowired.class);
+		// 初始化 @Value 注解
 		this.autowiredAnnotationTypes.add(Value.class);
 		try {
+			// 按需添加 @Inject 注解
 			this.autowiredAnnotationTypes.add((Class<? extends Annotation>)
 					ClassUtils.forName("javax.inject.Inject", AutowiredAnnotationBeanPostProcessor.class.getClassLoader()));
 			logger.trace("JSR-330 'javax.inject.Inject' annotation found and supported for autowiring");
@@ -241,7 +252,13 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 	}
 
-	// 查找当前 BeanName 中所有添加了 @Autowired 属性或方法，添加到缓存中
+	/**
+	 * 查找当前 BeanName 中所有添加了 @Autowired 属性或方法，添加到缓存中
+	 *
+	 * @param beanDefinition the merged bean definition for the bean
+	 * @param beanType the actual type of the managed bean instance
+	 * @param beanName the name of the bean
+	 */
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);
@@ -484,6 +501,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
+			// 属性中查找 需要依赖注入注解元信息
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				MergedAnnotation<?> ann = findAutowiredAnnotation(field);
 				if (ann != null) {
@@ -498,6 +516,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 				}
 			});
 
+			// 方法中查找 需要依赖注入注解元信息
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -720,6 +739,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 	/**
 	 * Class representing injection information about an annotated method.
+	 * 该类代表了一个注解方法的依赖注入信息。
 	 */
 	private class AutowiredMethodElement extends InjectionMetadata.InjectedElement {
 

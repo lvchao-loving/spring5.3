@@ -613,7 +613,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
-					// 执行 MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition 方法
+					// 循环遍历执行 MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition 方法
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
 				catch (Throwable ex) {
@@ -637,7 +637,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 * 1、将实例化的对象添加到三级缓存
 			 * 2、从二级缓存中添加移除对应的 beanName 对象
 			 * 3、将 beanName 添加到 registeredSingletons 集合中
-			 * 4、创建了一个 singletonFactory，singletonFactory的方法循环遍历执行了 SmartInstantiationAwareBeanPostProcessor#getEarlyBeanReference 方法
+			 * 4、创建了一个 singletonFactory，singletonFactory的方法循环遍历执行 SmartInstantiationAwareBeanPostProcessor#getEarlyBeanReference 方法
 			 */
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
@@ -1013,6 +1013,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+			/**
+			 * 循环遍历执行 SmartInstantiationAwareBeanPostProcessor#getEarlyBeanReference 方法
+			 */
 			for (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) {
 				exposedObject = bp.getEarlyBeanReference(exposedObject, beanName);
 			}

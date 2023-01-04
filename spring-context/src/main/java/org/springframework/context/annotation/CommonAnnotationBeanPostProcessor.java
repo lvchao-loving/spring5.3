@@ -142,7 +142,9 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
  *
- * CommonAnnotationBeanPostProcessor 作用是：解析 生命周期 中  @PostConstruct 和 @PreDestroy 注解。
+ * CommonAnnotationBeanPostProcessor 作用是：
+ * 1、解析 生命周期 中  @PostConstruct 和 @PreDestroy 注解。
+ * 2、解析 @Resource注解，可能解析 @WebServiceRef注解 和 @EJB注解（ @WebServiceRef注解 和 @EJB注解 通过类加载器加载，如果存在则解析，不存在和不解析）
  */
 @SuppressWarnings("serial")
 public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBeanPostProcessor
@@ -160,6 +162,12 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	@Nullable
 	private static final Class<? extends Annotation> ejbClass;
 
+	/**
+	 * 静态代码块初始化文件：
+	 * 		Resource.class 加载
+	 * 		WebServiceRef 按需加载
+	 * 		EJB 按需加载
+	 */
 	static {
 		resourceAnnotationTypes.add(Resource.class);
 
@@ -200,7 +208,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	 * Create a new CommonAnnotationBeanPostProcessor,
 	 * with the init and destroy annotation types set to
 	 * {@link javax.annotation.PostConstruct} and {@link javax.annotation.PreDestroy},
-	 * respectively.
+	 * respectively(各自地、分别地).
 	 */
 	public CommonAnnotationBeanPostProcessor() {
 		setOrder(Ordered.LOWEST_PRECEDENCE - 3);
@@ -324,10 +332,24 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return true;
 	}
 
+	/**
+	 * 属性赋值的核心方法
+	 *
+	 * @param pvs the property values that the factory is about to apply (never {@code null})
+	 * @param bean the bean instance created, but whose properties have not yet been set
+	 * @param beanName the name of the bean
+	 * @return
+	 */
 	@Override
 	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
+		/**
+		 * 找到对应的带有注解的 Metadata
+		 */
 		InjectionMetadata metadata = findResourceMetadata(beanName, bean.getClass(), pvs);
 		try {
+			/**
+			 * 属性注入
+			 */
 			metadata.inject(bean, beanName, pvs);
 		}
 		catch (Throwable ex) {
@@ -346,10 +368,19 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 
 	private InjectionMetadata findResourceMetadata(String beanName, Class<?> clazz, @Nullable PropertyValues pvs) {
-		// Fall back to class name as cache key, for backwards compatibility with custom callers.
+		/**
+		 * Fall back to class name as cache key, for backwards compatibility with custom callers.
+		 * 用 beanName 作为 缓存的Key ,没有beanName 使用 类名
+		 */
 		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
-		// Quick check on the concurrent map first, with minimal locking.
+
+		/**
+		 * Quick check on the concurrent map first, with minimal locking.
+		 * 从 缓存里面获取，是否已经存在
+		 */
 		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey);
+
+		// needsRefresh 其实就是判断 是否为null ,为 null 就重新创建， 这里是一个 double-check
 		if (InjectionMetadata.needsRefresh(metadata, clazz)) {
 			synchronized (this.injectionMetadataCache) {
 				metadata = this.injectionMetadataCache.get(cacheKey);
@@ -357,6 +388,8 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+
+					// 开始创建，并放入缓存
 					metadata = buildResourceMetadata(clazz);
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
@@ -365,7 +398,13 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return metadata;
 	}
 
+	/**
+	 * 对字段，方法遍历，看是否带有 @WebServiceRef注解、@Resource注解、@EJB注解，如果带有将对应的注解进行解析， 然后再就放入list。
+	 * @param clazz
+	 * @return
+	 */
 	private InjectionMetadata buildResourceMetadata(Class<?> clazz) {
+		// 这里过滤一下 spring 自己内部类， 像以 java. 开头的一般都是 jdk自己的类。
 		if (!AnnotationUtils.isCandidateClass(clazz, resourceAnnotationTypes)) {
 			return InjectionMetadata.EMPTY;
 		}
@@ -373,9 +412,15 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		List<InjectionMetadata.InjectedElement> elements = new ArrayList<>();
 		Class<?> targetClass = clazz;
 
+		// 首先这里是一个循环， 主要是可能当前类 有继承的情况，需要 迭代对 父类也进行处理
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
+			/**
+			 * 	这里首先是对字段进行处理 调用了ReflectionUtils， 就是通过回调方法，进行校验判断。
+			 * 	如果 field 上面有 @WebServiceRef， @Resource，@EJB 注解 ，就放入list
+			 * 	注意的是，不能放在 静态字段上面，不然报错。
+			 */
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -399,6 +444,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			/**
+			 *  这里 是对方法 进行处理 调用了ReflectionUtils， 就是 通过回调 方法，进行 校验判断
+			 *  如果 方法 上面有 @WebServiceRef， @Resource，@EJB 注解 ，就放入list
+			 *  @WebServiceRef 不能修饰static方法 ， 方法只能有一个 参数，一般就是 setter 方法，就是一个参数
+			 */
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -441,6 +491,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			// 后面的插在前面，每次插入都是从 index =0 开始插入
 			elements.addAll(0, currElements);
 			targetClass = targetClass.getSuperclass();
 		}

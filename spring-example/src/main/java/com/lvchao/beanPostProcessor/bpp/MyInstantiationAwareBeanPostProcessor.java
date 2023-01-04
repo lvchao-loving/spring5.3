@@ -18,17 +18,17 @@ import org.springframework.stereotype.Component;
  * @since 2023/1/4 14:12
  */
 @Slf4j
-@Component
+// @Component
 public class MyInstantiationAwareBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		if (beanName.equals("a")) {
-			log.info("postProcessBeforeInstantiation ...beanName {}", beanName);
-			Enhancer enhancer = new Enhancer();
+			log.info("InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation ...beanName {}", beanName);
+		/*	Enhancer enhancer = new Enhancer();
 			enhancer.setSuperclass(beanClass);
 			enhancer.setCallback(new AMethodInterceptor());
 			A a = (A) enhancer.create();
-			return a;
+			return a;*/
 		}
 		return null;
 	}
@@ -36,7 +36,7 @@ public class MyInstantiationAwareBeanPostProcessor implements InstantiationAware
 	@Override
 	public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
 		if (beanName.equals("a")) {
-			log.info("postProcessAfterInstantiation ...beanName {}", beanName);
+			log.info("InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation ...beanName {}", beanName);
 		}
 		return true;
 	}
@@ -44,7 +44,7 @@ public class MyInstantiationAwareBeanPostProcessor implements InstantiationAware
 	@Override
 	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
 		if (beanName.equals("a")) {
-			log.info("postProcessProperties ...beanName {}", beanName);
+			log.info("InstantiationAwareBeanPostProcessor#postProcessProperties ...beanName {}", beanName);
 		}
 		return pvs;
 	}

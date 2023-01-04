@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
  * @since 2023/1/4 14:01
  */
 @Slf4j
-@Component
+// @Component
 public class MyBeanPostProcessor implements BeanPostProcessor {
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (beanName.equals("a")) {
-			log.info("postProcessBeforeInitialization ...beanName {}", beanName);
+			log.info("BeanPostProcessor#postProcessBeforeInitialization ...beanName {}", beanName);
 		}
 
 		return bean;
@@ -28,7 +28,7 @@ public class MyBeanPostProcessor implements BeanPostProcessor {
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (beanName.equals("a")) {
-			log.info("postProcessAfterInitialization ...beanName {}", beanName);
+			log.info("BeanPostProcessor#postProcessAfterInitialization ...beanName {}", beanName);
 		}
 		return bean;
 	}
