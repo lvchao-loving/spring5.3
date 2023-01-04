@@ -7,9 +7,6 @@
 		</encoder>
 	</appender>
 
-
-
-
 	<logger name="e" level="debug" additivity="false">
 		<appender-ref ref="STDOUT"/>
 	</logger>

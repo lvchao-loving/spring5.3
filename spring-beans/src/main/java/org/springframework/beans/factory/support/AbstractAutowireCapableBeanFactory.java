@@ -541,6 +541,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 *  Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			 *
 			 *  让 BeanPostProcessors 有机会返回代理而不是目标bean实例。(AOP 部分涉及代码)
+			 *
+			 *  顺序遍历执行 InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation 方法，如果创建代理类
+			 *  再顺序遍历执行 BeanPostProcessor#postProcessAfterInitialization 方法。
 			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
@@ -553,6 +556,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
+			/**
+			 * 执行到这里说明没有为当前类创建代理类，所以需要创建当前类。
+			 */
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
@@ -1154,12 +1160,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
 		Object bean = null;
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
-			// Make sure bean class is actually resolved at this point.
+			// Make sure bean class is actually(的确、事实上) resolved at this point.
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					/**
+					 * 循环遍历执行 InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation 方法
+					 */
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
+						/**
+						 * 如果 bean 不为空，则说明创建了代理类，则执行 后置初始化方法，
+						 * 即：BeanPostProcessor#postProcessAfterInitialization 方法。
+						 */
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
@@ -1430,6 +1443,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		 * 然后使得 !bp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName) 成立即可。
 		 */
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+			/**
+			 * 循环遍历执行 InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation 方法，
+			 * 默认情况下 InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation 方法返回true，如果 返回false则spring
+			 * 不再进行属性赋值等一系列操作，直接结束当前属性赋值。
+			 */
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				if (!bp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
 					return;
@@ -1461,8 +1479,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (pvs == null) {
 				pvs = mbd.getPropertyValues();
 			}
+			/**
+			 * 循环遍历执行 InstantiationAwareBeanPostProcessor# postProcessProperties 方法。
+			 * InstantiationAwareBeanPostProcessor#postProcessProperties 方法被实现的比较多，主要有两个：
+			 * (1) CommonAnnotationBeanPostProcessor： 主要 注册带有 @Resource 注解的 属性
+			 * (2) AutowiredAnnotationBeanPostProcessor： 主要解决 带有 @Autowired，@Value，@Lookup，@Inject 注解的属性
+			 */
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
-				// 对 @Autowired 和 @Resource 注解完成属性填充
 				PropertyValues pvsToUse = bp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
 				if (pvsToUse == null) {
 					if (filteredPds == null) {

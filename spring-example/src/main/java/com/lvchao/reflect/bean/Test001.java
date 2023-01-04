@@ -1,6 +1,5 @@
-package com.lvchao.reflect;
+package com.lvchao.reflect.bean;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -11,13 +10,10 @@ import org.junit.Test;
  * </p>
  *
  * @author lvchao
- * @since 2023/1/2 14:06
+ * @since 2023/1/4 10:09
  */
-//@Slf4j(topic = "f")
-public class TestReflect {
-
-	// private static final Log log = LogFactory.getLog("sdk.biz.err");
-	private static final Log log = LogFactory.getLog(TestReflect.class);
+public class Test001 {
+	private static final Log log = LogFactory.getLog("sdk.biz.err");
 
 	@Test
 	public void test01(){
