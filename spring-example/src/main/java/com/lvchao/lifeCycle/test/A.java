@@ -19,8 +19,12 @@ public class A {
 	@Autowired
 	private B b;
 
-	public A() {
-		log.info("A 的无参构造方法");
+	/*public A() {
+		log.info("A 的无参构造方法...{}", this);
+	}*/
+
+	public A(B b){
+		this.b = b;
 	}
 
 	/**

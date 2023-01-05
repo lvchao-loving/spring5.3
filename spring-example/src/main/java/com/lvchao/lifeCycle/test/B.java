@@ -20,7 +20,7 @@ public class B {
 	private A a;
 
 	public B() {
-		log.info("B 的无参构造方法");
+		log.info("B 的无参构造方法...{}", this);
 	}
 
 	/**

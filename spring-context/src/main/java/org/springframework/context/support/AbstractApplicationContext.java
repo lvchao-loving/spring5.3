@@ -587,8 +587,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Check for listener beans and register them.
 				registerListeners();
 
-				// Instantiate all remaining (non-lazy-init) singletons.
-				// 实例化 容器所持有的 非懒加载 单例对象
+				/**
+				 * Instantiate all remaining (non-lazy-init) singletons.
+				 * 实例化 容器所持有的 非懒加载 单例对象
+				 */
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.

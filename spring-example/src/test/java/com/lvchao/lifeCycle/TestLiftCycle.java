@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+
 /**
  * <p>
  * 文件描述（必填！！！）
@@ -25,15 +28,15 @@ public class TestLiftCycle {
 		B b = applicationContext.getBean(B.class);
 		a.showA();
 		b.showB();
-		log.info("------------------------------");
+		/*log.info("------------------------------");
 		A a1 = applicationContext.getBean(A.class);
 		B b1 = applicationContext.getBean(B.class);
 		a1.showA();
-		b1.showB();
+		b1.showB();*/
 	}
 
 	@Test
-	public void defaultCycle(){
+	public void test02(){
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfigLifeCycle.class);
 		//System.out.println(context.getBean(D.class).getE());
 
@@ -43,6 +46,12 @@ public class TestLiftCycle {
 			e.printStackTrace();
 		}*/
 //		context.getBean(F.class).m0();
+	}
 
+
+	@Test
+	public void test03(){
+		Constructor<?>[] declaredConstructors = A.class.getDeclaredConstructors();
+		Arrays.asList(declaredConstructors).forEach(System.out::println);
 	}
 }
