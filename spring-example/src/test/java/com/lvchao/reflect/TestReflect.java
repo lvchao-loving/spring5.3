@@ -23,7 +23,8 @@ public class TestReflect {
 	public void test01(){
 	/*	log.info("{}", A.class.isAssignableFrom(B.class));
 		log.info("{}", A.class.isAssignableFrom(A.class));
-		log.info("{}", A.class.isAssignableFrom(C.class));*/
+		log.info("{}", A.class.isAssignableFrom(C.class));
+		*/
 	}
 
 	@Test
